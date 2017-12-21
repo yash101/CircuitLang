@@ -1,0 +1,106 @@
+# CircuitLang by Devyash Lodha :D
+
+# Comments begin with a hash
+## Comment blocks are between double hashes ##
+
+# Basic program:
+
+/begin ()
+	let i = \readint()
+	let j = \readint()
+	+ multandprint(i, j)
+	+ addandprint(i, j)
+
+/multandprint(a, b)
+	let num = a * b
+	\print("a * b: ", num, "\n")
+	\terminate
+
+/addandprint(a, b)
+	let num = a + b
+	\print("a + b:", num, "\n")
+	+ multandprint(num, num + 1)
+	+ multandprint(num, num + 1)
+
+## Program execution flow:
+
+
+				   +--------------+     +-----------+
+			+------> multandprint >-----> terminate >X
+            |      +--------------+     +-----------+
++-------+   |
+> begin >---+                           +--------------+     +-----------+
++-------+   |      +-------------+  +---> multandprint >-----> terminate >X
+			+------> addandprint >--+   +--------------+     +-----------+
+                   +-------------+  |
+			                        |   +--------------+     +-----------+ 
+				                    +---> multandprint >-----> terminate >X
+									    +--------------+     +-----------+
+
+##
+
+# Note: a terminate is implicitly placed at the end of each function; if the end of the function is reached and no function is called, the function will automatically terminate
+
+# Branching example:
+/begin ()
+	let i = \readint()
+	\if(i < 0)
+		+ ltzero(i)
+	\else if(i > 0)
+		+ gtzero(i)
+	\else
+		+ eqzero(i)
+
+/ltzero (i)
+	\print(i, " is less than zero\n")
+	# Note that there will be an implicit terminate here
+
+/gtzero (i)
+	\print(i, " is greater than zero\n")
+	\terminate
+
+/eqzero (i)
+	\print(i, " equals zero\n")
+	\terminate
+
+# Loops must be constructed recursively!
+#	for(int i = 0; i < 10; i++) print(i, "\n")
+/begin ()
+	+ countto(0, 10)
+
+/countto (i, num)
+	\if(i <= num)
+		\print(i, "\n")
+		+ countto(i + 1, num)
+
+
+## The Tick
+
+	We can consider that there is a global clock, or counter. How that will tick will be explained below.
+
+	In the first program example above, we began with the `begin` function. This function, `begin` is added to the execution queue, a list of operations that are to take
+	place in the next. This is how the program is started and the first function gets executed. The runtime contains a loop, which executes every instruction in the execution queue,
+	then ticks the clock. Each function in the execution queue must complete for the clock to tick.
+
+	We can observe this clock as such, by looking at the first example:
+
+	[ENTRY ]          /begin
+	[TICK 1]          /multandprint    /addandprint
+	[TICK 2]          /terminate [multandprint]    /multandprint    /multandprint
+	[TICK 3]          /terminate [multandprint]    /terminate [multandprint]
+
+	The first example program executes in three ticks. 
+
+##
+
+
+## Random:
+
+- Import file, relative to the current file, or absolute if begins with a /
+	- \import "filename"
+- Also, only one statement per line, ending with at least a `\n`
+
+##
+
+
+# CircuitLang by Devyash Lodha :D
