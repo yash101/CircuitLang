@@ -72,7 +72,7 @@ std::string read_file(std::string location, int* error)
       *error = ERR_FOPEN;
     return "";
   }
-  FileCloser fp(fil);     // Don't forget to use a condom!
+  FileCloser fp(fil);     // Protection
 
   fseek(fil, 0, SEEK_END);
   long l = ftell(fil);
@@ -85,33 +85,10 @@ std::string read_file(std::string location, int* error)
       *error = ERR_MEM_ALLOC;
     return "";
   }
-  AutoPointer<char> bptr(buffer, true);   // Again, condoms can be a lifesaver
-}
+  AutoPointer<char> bptr(buffer, true);   // Protection
 
+  int read = fread(buffer, sizeof(char), l, fil);
+  buffer[l] = '\0';
 
-
-
-
-
-int process_file(const char* filename, std::vector<std::string>& lines, std::map<std::string, bool>& complete)
-{
-  if(complete[std::string(filename)] == true) return SUCCESS;
-  complete[std::string(filename)] = true;
-  FILE* file = fopen(filename, "r");
-  FileCloser fprotect(file);
-  if(!file)
-    return ERR_FOPEN;
-
-  fseek(file, 0, SEEK_END);
-  long len = ftell(file);
-  fseek(file, 0, SEEK_SET);
-
-  char* buffer = new char[len + 1];
-  if(!buffer)
-  {
-    return ERR_MEM_ALLOC;
-  }
-
-  fread(buffer, sizeof(char), len, file);
-  buffer[len] = '\0';
+  return std::string(buffer, read + 1);
 }
