@@ -1,40 +1,35 @@
-========================================================================
-    CONSOLE APPLICATION : CircuitLang Project Overview
-========================================================================
+# CircuitLang
 
-AppWizard has created this CircuitLang application for you.
+CircuitLang is a random project I'm working on. It's a whole new programming paradigm (I think)
 
-This file contains a summary of what you will find in each of the files that
-make up your CircuitLang application.
+The main paradigm of this language is that when a function is called, all of its code executes in parallel. Also, functions cannot return to their callee, so this mitigates the requirement for a stack, allows infinite recursion (thats how you implement things such as loops). I guess this description is quite confusing. Let's show some code and analyze it
 
+```
+# Comments begin with a hash
+## Block comments begin/end with a double hash ##
 
-CircuitLang.vcxproj
-    This is the main project file for VC++ projects generated using an Application Wizard.
-    It contains information about the version of Visual C++ that generated the file, and
-    information about the platforms, configurations, and project features selected with the
-    Application Wizard.
+# A function is defined by a forward slash followed by two parenthesis, containing a comma separated arguments list.
+/begin () {
+	# To make programming in this language practical, some operations take place iteratively; these are strictly defined before program execution.
+	let Int a = 2;
+	let Int b = 4;
 
-CircuitLang.vcxproj.filters
-    This is the filters file for VC++ projects generated using an Application Wizard. 
-    It contains information about the association between the files in your project 
-    and the filters. This association is used in the IDE to show grouping of files with
-    similar extensions under a specific node (for e.g. ".cpp" files are associated with the
-    "Source Files" filter).
+	# These are actual function calls; each of these functions will execute together
+	+ subtract (a, b)
+	+ add (a, b)
 
-CircuitLang.cpp
-    This is the main application source file.
+	# In a perfect world, this would be identical to the setup at the top
+	+ add(a, b)
+	+ subtract (a, b)
+}
 
-/////////////////////////////////////////////////////////////////////////////
-Other standard files:
+/subtract (a, b) {
+	- print(a - b)
+	+ add (a, b)
+}
 
-StdAfx.h, StdAfx.cpp
-    These files are used to build a precompiled header (PCH) file
-    named CircuitLang.pch and a precompiled types file named StdAfx.obj.
+/add (a, b) {
+	- print(a + b)
+}
 
-/////////////////////////////////////////////////////////////////////////////
-Other notes:
-
-AppWizard uses "TODO:" comments to indicate parts of the source code you
-should add to or customize.
-
-/////////////////////////////////////////////////////////////////////////////
+```
