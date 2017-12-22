@@ -2,6 +2,7 @@
 #include "errors.h"
 #include "stringproc.h"
 #include "protection.h"
+#include "config.h"
 
 #include <stdio.h>
 
@@ -10,6 +11,13 @@
 #include <map>
 #include <string.h>
 #include <sstream>
+
+// Less typing can be better :)
+using namespace std;
+using namespace runtime;
+
+std::string read_file(std::string location);
+
 
 
 /*
@@ -22,18 +30,68 @@ What I will need:
 
 */
 
-int run_program(const char* filename);
-int process_file(const char* filename, std::vector<std::string>& lines, std::map<std::string, bool>& complete);
-
-int runtime::run_program(const char* filename)
+CircuitLangCTX::CircuitLangCTX(std::string str, bool file)
 {
-  std::vector<std::string> lines;
-  std::map<std::string, bool> files_done;
-
-  process_file(filename, lines, files_done);
-
-  return SUCCESS;
+  if(file)
+  {
+    program_file = str;
+  }
+  else
+  {
+    program_code = str;
+  }
 }
+
+
+
+
+
+/* TODO: complete! */
+std::string runtime::resolve_file_location(std::string reference, std::string path)
+{
+  // Do nothing if we have an absolute URL
+  if(path.front() != '/')
+  {
+    std::vector<std::string> parts;
+    std::stringstream str(reference);
+    std::string buf;
+    while(std::getline(str, buf, '/'))
+    {
+      parts.push_back(buf);
+    }
+  }
+}
+
+/* Reads a file into a string */
+std::string read_file(std::string location, int* error)
+{
+  FILE* fil = fopen(location.c_str(), "r");
+  if(!fil)
+  {
+    if(error)
+      *error = ERR_FOPEN;
+    return "";
+  }
+  FileCloser fp(fil);     // Don't forget to use a condom!
+
+  fseek(fil, 0, SEEK_END);
+  long l = ftell(fil);
+  fseek(fil, 0, SEEK_SET);
+
+  char* buffer = new char[l + 1];
+  if(!buffer)
+  {
+    if(error)
+      *error = ERR_MEM_ALLOC;
+    return "";
+  }
+  AutoPointer<char> bptr(buffer, true);   // Again, condoms can be a lifesaver
+}
+
+
+
+
+
 
 int process_file(const char* filename, std::vector<std::string>& lines, std::map<std::string, bool>& complete)
 {

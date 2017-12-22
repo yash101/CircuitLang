@@ -9,6 +9,31 @@
 
 #include <stdio.h>
 
+template<typename T = void>
+class AutoPointer
+{
+private:
+  T* ptr;
+  bool array;
+
+public:
+  inline AutoPointer(T* pointer, bool arr) :
+    ptr(pointer), array(arr)
+  {}
+  inline void cancel()
+  {
+    ptr = NULL;
+  }
+  inline ~AutoPointer()
+  {
+    if(ptr)
+    {
+      if(array) delete[] ptr;
+      else delete ptr;
+    }
+  }
+};
+
 class FileCloser
 {
 private:

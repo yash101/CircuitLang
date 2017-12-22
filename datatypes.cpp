@@ -1,4 +1,6 @@
 #include "runtime.h"
+#include "datatypes.h"
+
 #include <sstream>
 
 using namespace runtime::datatypes;
