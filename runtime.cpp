@@ -74,7 +74,7 @@ int CircuitLangCTX::Run()
     return SUCCESS;
 
   int ret;
-  if(( ret = ParseProgram() ) != SUCCESS)
+//  if(( ret = ParseProgram() ) != SUCCESS)
     return ret;
 }
 
