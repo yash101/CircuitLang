@@ -41,45 +41,45 @@ namespace runtime
 
     // Built in primitive functions
     // Arithmetic
-    static int CL_builtin_arith_add(void* args);
-    static int CL_builtin_arith_sub(void* args);
-    static int CL_builtin_arith_mul(void* args);
-    static int CL_builtin_arith_div(void* args);
-    static int CL_builtin_arith_shl(void* args);
-    static int CL_builtin_arith_shr(void* args);
-    static int CL_builtin_arith_or(void* args);
-    static int CL_builtin_arith_not(void* args);
-    static int CL_builtin_arith_and(void* args);
-    static int CL_builtin_arith_xor(void* args);
+    static int CL_builtin_arith_add(void* args); // add
+    static int CL_builtin_arith_sub(void* args); // subtract
+    static int CL_builtin_arith_mul(void* args); // multiply
+    static int CL_builtin_arith_div(void* args); // divide
+    static int CL_builtin_arith_shl(void* args); // shift left
+    static int CL_builtin_arith_shr(void* args); // shift right
+    static int CL_builtin_arith_or(void* args);  // bitwise or
+    static int CL_builtin_arith_not(void* args); // bitwise not
+    static int CL_builtin_arith_and(void* args); // bitwise and
+    static int CL_builtin_arith_xor(void* args); // bitwise xor
 
     // Comparison
-    static int CL_builtin_compare_eq(void* args);
-    static int CL_builtin_compare_neq(void* args);
-    static int CL_builtin_compare_lt(void* args);
-    static int CL_builtin_compare_gt(void* args);
-    static int CL_builtin_compare_lte(void* args);
-    static int CL_builtin_compare_gte(void* args);
+    static int CL_builtin_compare_eq(void* args);  // compare equal (==)
+    static int CL_builtin_compare_neq(void* args); // compare not equal (=/=)
+    static int CL_builtin_compare_lt(void* args);  // compare less than
+    static int CL_builtin_compare_gt(void* args);  // compare greater than
+    static int CL_builtin_compare_lte(void* args); // compare less than or equal
+    static int CL_builtin_compare_gte(void* args); // compare greater than or equal
 
     // Basic Ops
-    static int CL_builtin_basic_create_variable(void* args);
-    static int CL_builtin_basic_set_variable(void* args);
-    static int CL_builtin_basic_define_globvar(void* args);
-    static int CL_builtin_basic_get_globvar(void* args);
+    static int CL_builtin_basic_create_variable(void* args); // defines a variable
+    static int CL_builtin_basic_set_variable(void* args);    // sets a variable
+    static int CL_builtin_basic_define_globvar(void* args);  // defines a global variable
+    static int CL_builtin_basic_get_globvar(void* args);     // retrieves a global variable
 
     // Input functions
-    static int CL_builtin_readchar(void* args);
-    static int CL_builtin_readint(void* args);
-    static int CL_builtin_readlong(void* args);
-    static int CL_builtin_readfloat(void* args);
-    static int CL_builtin_readdouble(void* args);
+    static int CL_builtin_readchar(void* args);   // reads char from stdin
+    static int CL_builtin_readint(void* args);    // reads int from stdin
+    static int CL_builtin_readlong(void* args);   // reads long from stdin
+    static int CL_builtin_readfloat(void* args);  // reads float from stdin
+    static int CL_builtin_readdouble(void* args); // reads double from stdin
 
     // Output functions
-    static int CL_builtin_printchar(void* args);
-    static int CL_builtin_print(void* args);
-    static int CL_builtin_println(void* args);
+    static int CL_builtin_printchar(void* args); // prints a char
+    static int CL_builtin_print(void* args);     // prints something
+    static int CL_builtin_println(void* args);   // prints something and then prints a newline
 
     // Functions
-    static int CL_builtin_call_function(void* args);
+    static int CL_builtin_call_function(void* args); // calls a function
 
   private:
     // Holds the program code and the program file
