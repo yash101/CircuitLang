@@ -81,6 +81,12 @@ namespace runtime
     // Functions
     static int CL_builtin_call_function(void* args); // calls a function
 
+    // Toolkit functions
+  protected:
+    static bool ValidFirstLetterInFunctionName(char ch);
+    static bool ValidLetterInFunctionName(char ch);
+    static bool CheckFunctionName(std::string fn);
+
   private:
     // Holds the program code and the program file
     std::string program_file;

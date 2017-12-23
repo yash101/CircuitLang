@@ -108,8 +108,43 @@ int CircuitLangCTX::ParseProgram()
     lines.push_back(tmp);
   }
 
+  // The name of the current function
+  std::string current_function = "";
+
+  // The instructions part of the current function
+  std::string function_instructions = "";
+
+  // Process the lines (of code)
+  // Note that we are doing this line-by-line so that we can give better error messages
   for(size_t i = 0; i < lines.size(); i++)
   {
+    // Skip processing empty lines
+    if(lines[i].empty())
+      continue;
+
+    // Functions begin with a forward slash
+    // Global definitions and imports begin with an `@`
+    if(lines[i].front() == '/')
+    {
+      // Let's begin a function
+      // Iterate until end or parenthesis (if end reached, error!)
+      size_t pos = 1;
+      while(pos < lines[i].size() && lines[i][pos] != '(')
+        pos++;
+      if(pos == lines[i].size())
+      {
+        fprintf(stderr, "SyntaxError: %s:%d expected parameter list for function\n\t%s", program_file.c_str(), i, lines[i].c_str());
+        return ERR_PARSE_FAILED;
+      }
+
+      // Pos contains the location of the first parenthesis
+      // Pos-1 marks the last possible location for a function name; thus we can
+      // pad a string from lines[i][1] to lines[i][pos-1] for the function name
+      std::string fname = lines[i].substr(1, pos - 1 - 1);
+
+      // Remove before/after space from the function name
+      lib::pad(fname);
+    }
   }
 
   return SUCCESS;
@@ -233,7 +268,34 @@ int CircuitLangCTX::CheckCommonSyntaxErrors()
   }
 }
 
+// Check if a letter is a valid first letter in a function name
+bool CircuitLangCTX::ValidFirstLetterInFunctionName(char ch)
+{
+  return isalpha(ch) || ch == '_';
+}
 
+// Check if a letter is allowed in a function name
+bool CircuitLangCTX::ValidLetterInFunctionName(char ch)
+{
+  return isalnum(ch) || ch == '_';
+}
+
+bool CircuitLangCTX::CheckFunctionName(std::string name)
+{
+  // Empty names aren't allowed
+  if(name.empty())
+    return false;
+  // Check the first letter
+  if(!ValidFirstLetterInFunctionName(name.front()))
+    return false;
+
+  // Check the rest of the letters
+  for(size_t i = 1; i < name.size(); i++)
+  {
+    if(!ValidLetterInFunctionName(name[i]))
+      return false;
+  }
+}
 
 /* TODO: complete! This function just appends reference and path currently but needs to be completely written to be smarter */
 std::string runtime::resolve_file_location(std::string reference, std::string path)
