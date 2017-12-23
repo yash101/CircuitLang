@@ -143,8 +143,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="todolist.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="datatypes.h" />
     <ClInclude Include="errors.h" />
     <ClInclude Include="protection.h" />
     <ClInclude Include="runtime.h" />

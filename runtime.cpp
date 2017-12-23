@@ -16,7 +16,7 @@
 using namespace std;
 using namespace runtime;
 
-std::string read_file(std::string location);
+std::string read_file(std::string location, int* error);
 
 
 
@@ -30,11 +30,18 @@ What I will need:
 
 */
 
-CircuitLangCTX::CircuitLangCTX(std::string str, bool file)
+
+
+CircuitLangCTX::CircuitLangCTX(std::string str, bool file) :
+  program_counter(0)
 {
   if(file)
   {
     program_file = str;
+    int err;
+    program_code = read_file(program_file, &err);
+    if(err != SUCCESS)
+      throw std::exception("Error: could not read file", err);
   }
   else
   {
@@ -42,11 +49,36 @@ CircuitLangCTX::CircuitLangCTX(std::string str, bool file)
   }
 }
 
+CircuitLangCTX::CircuitLangCTX() :
+  program_counter(0)
+{
+}
 
+int CircuitLangCTX::LoadFromFile(std::string file)
+{
+  program_file = file;
+  int err;
+  program_code = read_file(file, &err);
+  return err;
+}
 
+int CircuitLangCTX::LoadFromCodeString(std::string code)
+{
+  program_code = code;
+  return SUCCESS;
+}
 
+int CircuitLangCTX::Run()
+{
+  if(program_code.empty())
+    return SUCCESS;
 
-/* TODO: complete! */
+  int ret;
+  if(( ret = ParseProgram() ) != SUCCESS)
+    return ret;
+}
+
+/* TODO: complete! This function just appends reference and path currently but needs to be completely written to be smarter */
 std::string runtime::resolve_file_location(std::string reference, std::string path)
 {
   // Do nothing if we have an absolute URL
@@ -60,11 +92,21 @@ std::string runtime::resolve_file_location(std::string reference, std::string pa
       parts.push_back(buf);
     }
   }
+
+  if(reference.back() == '/')
+    reference.pop_back();
+  if(path.front() == '/')
+    return reference + path;
+  else
+    return reference + '/' + path;
 }
 
 /* Reads a file into a string */
 std::string read_file(std::string location, int* error)
 {
+  if(error)
+    *error = SUCCESS;
+
   FILE* fil = fopen(location.c_str(), "r");
   if(!fil)
   {
