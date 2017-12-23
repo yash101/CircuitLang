@@ -122,6 +122,8 @@ int CircuitLangCTX::ParseProgram()
     if(lines[i].empty())
       continue;
 
+    // Process functions:
+    // - /<function name>[ ]([ <arg0> , <arg1> , <arg...> ])
     // Functions begin with a forward slash
     // Global definitions and imports begin with an `@`
     if(lines[i].front() == '/')
@@ -144,6 +146,23 @@ int CircuitLangCTX::ParseProgram()
 
       // Remove before/after space from the function name
       lib::pad(fname);
+    }
+
+    // Process lines beginning with '@' - global definitions and imports
+    // - @define <variable name>[ = <initializer>];
+    // - @import <filename>;
+
+    else if(lines[i].front() == '@')
+    {
+    }
+
+    // Process each of the possible operations
+    // - var[ ]<name>[ ]string [= <initializer];
+    // - <name>[ ]<operator>;    i++, j--, i *= 2, etc.
+    // - <name>[ ]=[ ][<in> <operator> <in> <...>];   i = 1 + 2 * 3, j = 2, etc.
+    // - >[ ]<name>[ ]( [<arg0> , <arg1> , <...>] );    >func(1, 2, 3)
+    else
+    {
     }
   }
 
@@ -297,7 +316,10 @@ bool CircuitLangCTX::CheckFunctionName(std::string name)
   }
 }
 
-/* TODO: complete! This function just appends reference and path currently but needs to be completely written to be smarter */
+/*
+TODO: complete! This function just appends reference and path currently but needs
+to be completely written to be smarter
+*/
 std::string runtime::resolve_file_location(std::string reference, std::string path)
 {
   // Do nothing if we have an absolute URL
