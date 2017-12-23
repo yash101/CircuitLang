@@ -34,8 +34,8 @@ namespace runtime
   {
     // Private structures and typedefs/etc, builtin functions
   private:
-    static const int func_type_undef = 0;
-    static const int func_type_func = 1;
+    static const int func_type_undef = 0;    // default initializer for functions; a regular function type
+    static const int func_type_func = 1;     // 
     static const int func_type_jmpif = 2;
     static const int func_type_jmpifnot = 3;
 
@@ -103,6 +103,7 @@ namespace runtime
     unsigned long program_counter;
 
     // This function parses a program and populates instruction_vector and jmp_resolver
+    int CheckCommonSyntaxErrors();
     int ParseProgram();
 
   public:

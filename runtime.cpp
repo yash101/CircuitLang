@@ -11,6 +11,7 @@
 #include <map>
 #include <string.h>
 #include <sstream>
+#include <stack>
 
 // Less typing can be better :)
 using namespace std;
@@ -74,9 +75,165 @@ int CircuitLangCTX::Run()
     return SUCCESS;
 
   int ret;
-//  if(( ret = ParseProgram() ) != SUCCESS)
+  if(( ret = ParseProgram() ) != SUCCESS)
     return ret;
+
+  return SUCCESS;
 }
+
+/*
+This function parses the program code; it determines syntax errors and converts
+  the code into the executable format
+*/
+int CircuitLangCTX::ParseProgram()
+{
+  // The program code shall be contained in program_code by now
+
+  // Functions shall start with a forward slash
+  // Global definitions and imports shall start with an `@`
+
+  CheckCommonSyntaxErrors();
+
+  std::stringstream buffer(program_code);
+  std::string tmp;
+
+  // Break into lines
+  std::vector<std::string> lines;
+  while(std::getline(buffer, tmp))
+  {
+    // tmp has a line
+    // pad the line
+    lib::pad(tmp);
+    // add to the line vector
+    lines.push_back(tmp);
+  }
+
+  for(size_t i = 0; i < lines.size(); i++)
+  {
+  }
+
+  return SUCCESS;
+}
+
+int CircuitLangCTX::CheckCommonSyntaxErrors()
+{
+  // Check brackets, braces and parentheses and quotation marks to see if they have matches
+  std::stack<char> stk;
+  size_t num = program_code.size();
+  for(size_t i = 0; i < num; i++)
+  {
+
+    // Check quotes first. If we are inside a quote, traverse to the end
+    if(program_code[i] == '"')
+    {
+      while(true)
+      {
+        if(i < num && program_code[i] != '"') // Iterate until finding the end
+        {
+          i++;
+        }
+        else
+        {
+          if(program_code[i - 1] == '\\') // Check to see if false positive (escaped quote)
+          {
+            i++;
+          }
+          else
+          {
+            if(i == num - 1)
+            {
+              fprintf(stderr, "Error, expected double quote, received EOL/EOF!\n");
+              return ERR_PRECHECK_FAILED;
+            }
+            break;  // We've reached the end of the string
+          }
+        }
+      }
+    }
+
+    else if(program_code[i] == '\'')
+    {
+      if(program_code[i + 2] == '\'')
+      {
+        i += 2;
+        continue;
+      }
+      else
+      {
+        // Escape sequence?
+        if(program_code[i + 1] == '\\')
+        {
+          // Hex escape sequence?
+          if(program_code[i + 2] == 'x')
+          {
+            if(program_code[i + 5] == '\'')
+            {
+              i += 5;
+              continue;
+            }
+            else
+            {
+              fprintf(stderr, "Error, expected single quote, received EOL/EOF!\n");
+              return ERR_PRECHECK_FAILED;
+            }
+          }
+          // Non-hex escape sequence? Note that escape sequences will be replaced
+          // by the parser
+          else
+          {
+            // '\a'
+            if(program_code[i + 3] == '\'')
+            {
+              i += 3;
+            }
+            else
+            {
+              fprintf(stderr, "Error, expected single quote, received EOL/EOF");
+              return ERR_PRECHECK_FAILED;
+            }
+          }
+        }
+        else
+        {
+          fprintf(stderr, "Error, expected single quote!\n");
+          return ERR_PRECHECK_FAILED;
+        }
+      }
+    }
+
+    // Check if bracket-type thing
+    else if(program_code[i] == '{' ||
+            program_code[i] == '[' ||
+            program_code[i] == '(')
+    {
+      stk.push(program_code[i]);
+    }
+
+    else if(program_code[i] == '}' ||
+            program_code[i] == ']' ||
+            program_code[i] == ')')
+    {
+      char ch = stk.top();
+      stk.pop();
+      if(ch == '{' && program_code[i] == '}')
+      {
+      }
+      else if(ch == '[' && program_code[i] == ']')
+      {
+      }
+      else if(ch == '(' && program_code[i] == ')')
+      {
+      }
+      else
+      {
+        fprintf(stderr, "Error, unmatched '%c'!\n", ch);
+        return ERR_PARSE_FAILED;
+      }
+    }
+  }
+}
+
+
 
 /* TODO: complete! This function just appends reference and path currently but needs to be completely written to be smarter */
 std::string runtime::resolve_file_location(std::string reference, std::string path)
