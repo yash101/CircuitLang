@@ -87,6 +87,13 @@ namespace runtime
     static bool ValidLetterInFunctionName(char ch);
     static bool CheckFunctionName(std::string fn);
 
+    class CL_function_instruction_container
+    {
+    public:
+      std::string function_name;
+      std::vector<std::string> instructions;
+    };
+
   private:
     // Holds the program code and the program file
     std::string program_file;
