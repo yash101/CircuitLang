@@ -114,13 +114,24 @@ int CircuitLangCTX::ParseProgram()
   // The instructions part of the current function
   std::string function_instructions = "";
 
+  size_t skip_lines = 0;
   // Process the lines (of code)
   // Note that we are doing this line-by-line so that we can give better error messages
-  for(size_t i = 0; i < lines.size(); i++)
+  for(size_t i = 0; i < lines.size(); i += skip_lines)
   {
     // Skip processing empty lines
     if(lines[i].empty())
       continue;
+
+    // Append lines if ending with a backslash
+    // Using scope to prevent name clashes - yeah - fuck poor software engineering principles
+    {
+      size_t append = i;
+      // Find the last line that ends with a backslash
+      while(lines[append].back() == '\\')
+      {
+      }
+    }
 
     // Process functions:
     // - /<function name>[ ]([ <arg0> , <arg1> , <arg...> ])
