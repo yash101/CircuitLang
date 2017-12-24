@@ -94,25 +94,28 @@ int CircuitLangCTX::ParseProgram()
 
   CheckCommonSyntaxErrors();
 
-  std::stringstream buffer(program_code);
-  std::string tmp;
-
-  // Break into lines
+  // This vector holds each line of code
   std::vector<std::string> lines;
-  while(std::getline(buffer, tmp))
   {
-    // tmp has a line
-    // pad the line
-    lib::pad(tmp);
-    // add to the line vector
-    lines.push_back(tmp);
+  // This stringstream holds the code, makes string processing much easiers
+    std::stringstream buffer(program_code);
+    std::string tmp;
+
+    // Break into lines
+    while(std::getline(buffer, tmp))
+    {
+      // tmp has a line
+      // pad the line
+      lib::pad(tmp);
+      // add to the line vector
+      lines.push_back(tmp);
+    }
   }
 
   // The name of the current function
   std::string current_function = "";
-
   // The instructions part of the current function
-  std::string function_instructions = "";
+  std::vector<std::vector<std::string>> instructions;
 
   size_t skip_lines = 0;
   // Process the lines (of code)
