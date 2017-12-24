@@ -123,15 +123,7 @@ int CircuitLangCTX::ParseProgram()
     if(lines[i].empty())
       continue;
 
-    // Append lines if ending with a backslash
-    // Using scope to prevent name clashes - yeah - fuck poor software engineering principles
-    {
-      size_t append = i;
-      // Find the last line that ends with a backslash
-      while(lines[append].back() == '\\')
-      {
-      }
-    }
+    /* TODO: support multi-line statements */
 
     // Process functions:
     // - /<function name>[ ]([ <arg0> , <arg1> , <arg...> ])
