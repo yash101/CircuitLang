@@ -160,7 +160,6 @@ int CircuitLangCTX::ParseProgram()
     // Process lines beginning with '@' - global definitions and imports
     // - @define <variable name>[ = <initializer>];
     // - @import <filename>;
-
     else if(lines[i].front() == '@')
     {
       // Import file
@@ -175,12 +174,24 @@ int CircuitLangCTX::ParseProgram()
     }
 
     // Process each of the possible operations
-    // - var[ ]<name>[ ]string [= <initializer];
+    // - var <name> <type> [= <initializer];
     // - <name>[ ]<operator>;    i++, j--, i *= 2, etc.
     // - <name>[ ]=[ ][<in> <operator> <in> <...>];   i = 1 + 2 * 3, j = 2, etc.
     // - >[ ]<name>[ ]( [<arg0> , <arg1> , <...>] );    >func(1, 2, 3)
     else
     {
+      std::stringstream s(lines[i]);
+      std::string buffer;
+      s >> buffer;
+      // We need to break each operation into steps
+      // var <name> <type> [= initializer];
+      if(buffer == "var")
+      {
+        std::string type;
+        std::string name;
+        std::string initializer;
+        instructions.back().instructions.push_back("create <type> <name> <initializer>");
+      }
     }
   }
 
