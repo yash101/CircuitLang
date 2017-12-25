@@ -111,6 +111,11 @@ namespace runtime
     // stored in the instruction_vector
     std::unordered_map<std::string, size_t> jmp_resolver;
 
+    // Holds global variables for the program
+    // You're discouraged to use global variables, but they are indispensible for
+    // things like constants and configuration values
+    std::unordered_map<std::string, datatypes::DataType*> globals;
+
     // The clock, which ticks upon the completion of a level of execution
     // Remember that functions are executed "simultaneously"
     unsigned long program_counter;

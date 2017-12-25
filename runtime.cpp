@@ -112,6 +112,7 @@ int CircuitLangCTX::ParseProgram()
     }
   }
 
+  // Holds all the instructions for a function, decoded
   std::vector<CL_function_instruction_container> instructions;
 
   size_t skip_lines = 0;
@@ -162,6 +163,15 @@ int CircuitLangCTX::ParseProgram()
 
     else if(lines[i].front() == '@')
     {
+      // Import file
+      if(lib::begins_with(lines[i], "@import"))
+      {
+        /* TODO: import files */
+      }
+      else if(lib::begins_with(lines[i], "@define"))
+      {
+        /* TODO: global variable definitions */
+      }
     }
 
     // Process each of the possible operations
@@ -177,6 +187,7 @@ int CircuitLangCTX::ParseProgram()
   return SUCCESS;
 }
 
+// Checks for typical syntax errors; currently doesn't do anything
 int CircuitLangCTX::CheckCommonSyntaxErrors()
 {
 }
