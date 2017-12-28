@@ -87,6 +87,12 @@ namespace runtime
     static bool ValidLetterInFunctionName(char ch);
     static bool CheckFunctionName(std::string fn);
 
+    struct CL_string_sizet_tuple
+    {
+      std::string str;
+      size_t pos;
+    };
+
     class CL_function_instruction_container
     {
     public:

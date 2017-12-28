@@ -87,110 +87,27 @@ This function parses the program code; it determines syntax errors and converts
 */
 int CircuitLangCTX::ParseProgram()
 {
-  // The program code shall be contained in program_code by now
 
-  // Functions shall start with a forward slash
-  // Global definitions and imports shall start with an `@`
+  // CheckCommonSyntaxErrors();   // Commented out for now because it's not implemented
 
-  CheckCommonSyntaxErrors();
+  // The string will contain the line; the size_t will contain the line
+  //  number of the first line of code
+  std::vector<CL_string_sizet_tuple> instruction_lines;
 
-  // This vector holds each line of code
-  std::vector<std::string> lines;
+  // Read all code lines
+  // This function uses scopes to prevent random pain-in-the-ass name clashes
   {
-  // This stringstream holds the code, makes string processing much easiers
-    std::stringstream buffer(program_code);
-    std::string tmp;
-
-    // Break into lines
-    while(std::getline(buffer, tmp))
+    std::stringstream code(program_code);
+    std::string buffer;
+    while(std::getline(code, buffer))
     {
-      // tmp has a line
-      // pad the line
-      lib::pad(tmp);
-      // add to the line vector
-      lines.push_back(tmp);
-    }
-  }
+      lib::pad(buffer);
+      if(buffer.empty())
+        continue;
 
-  // Holds all the instructions for a function, decoded
-  std::vector<CL_function_instruction_container> instructions;
-
-  size_t skip_lines = 0;
-  // Process the lines (of code)
-  // Note that we are doing this line-by-line so that we can give better error messages
-  for(size_t i = 0; i < lines.size(); i += skip_lines)
-  {
-    // Skip processing empty lines
-    if(lines[i].empty())
-      continue;
-
-    /* TODO: support multi-line statements */
-
-    // Process functions:
-    // - /<function name>[ ]([ <arg0> , <arg1> , <arg...> ])
-    // Functions begin with a forward slash
-    // Global definitions and imports begin with an `@`
-    if(lines[i].front() == '/')
-    {
-      // Let's begin a function
-      // Iterate until end or parenthesis (if end reached, error!)
-      size_t pos = 1;
-      while(pos < lines[i].size() && lines[i][pos] != '(')
-        pos++;
-      if(pos == lines[i].size())
+      // We have a function; read lines until we have a closing parenthesis (')')
+      if(buffer.front() == '/')
       {
-        fprintf(stderr, "SyntaxError: %s:%d expected parameter list for function\n\t%s", program_file.c_str(), i, lines[i].c_str());
-        return ERR_PARSE_FAILED;
-      }
-
-      // Pos contains the location of the first parenthesis
-      // Pos-1 marks the last possible location for a function name; thus we can
-      // pad a string from lines[i][1] to lines[i][pos-1] for the function name
-      std::string fname = lines[i].substr(1, pos - 1 - 1);
-
-      // Remove before/after space from the function name
-      lib::pad(fname);
-
-      // Add the function
-      CL_function_instruction_container v;
-      v.function_name = fname;
-      instructions.push_back(v);
-    }
-
-    // Process lines beginning with '@' - global definitions and imports
-    // - @define <variable name>[ = <initializer>];
-    // - @import <filename>;
-    else if(lines[i].front() == '@')
-    {
-      // Import file
-      if(lib::begins_with(lines[i], "@import"))
-      {
-        /* TODO: import files */
-      }
-      else if(lib::begins_with(lines[i], "@define"))
-      {
-        /* TODO: global variable definitions */
-      }
-    }
-
-    // Process each of the possible operations
-    // - var <name> <type> [= <initializer];
-    // - <name>[ ]<operator>;    i++, j--, i *= 2, etc.
-    // - <name>[ ]=[ ][<in> <operator> <in> <...>];   i = 1 + 2 * 3, j = 2, etc.
-    // - >[ ]<name>[ ]( [<arg0> , <arg1> , <...>] );    >func(1, 2, 3)
-    else
-    {
-      std::stringstream s(lines[i]);
-      std::string buffer;
-      s >> buffer;
-      // We need to break each operation into steps
-      // var <name> <type> [= initializer];
-      if(buffer == "var")
-      {
-        std::string type;
-        std::string name;
-        std::string initializer;
-        instructions.back().instructions.push_back("create <type> <name> <initializer>");
       }
     }
   }
