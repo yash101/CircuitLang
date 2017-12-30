@@ -92,24 +92,97 @@ int CircuitLangCTX::ParseProgram()
 
   // The string will contain the line; the size_t will contain the line
   //  number of the first line of code
-  std::vector<CL_string_sizet_tuple> instruction_lines;
 
-  // Read all code lines
-  // This function uses scopes to prevent random pain-in-the-ass name clashes
+//  std::vector<CL_string_sizet_tuple> instruction_lines; *********************
+
+  std::stringstream code(program_code);
+
+  // Which line number are we on?
+  size_t curpos = 0;
+
+  // This loop shall process all the program code
+  while(true)
   {
-    std::stringstream code(program_code);
-    std::string buffer;
-    while(std::getline(code, buffer))
-    {
-      lib::pad(buffer);
-      if(buffer.empty())
-        continue;
+    // Holds the next line of code
+    size_t nextpos = curpos;
 
-      // We have a function; read lines until we have a closing parenthesis (')')
-      if(buffer.front() == '/')
+    // Temporary string for usage
+    std::string buffer;
+
+    // This macro definition will help us out!
+#define GETLINE(fil, buf) { std::getline(fil, buf); nextpos++; }
+
+    GETLINE(code, buffer);
+    lib::pad(buffer);
+
+    // Remove comments
+    size_t cpos = buffer.find("#");
+    // Comment found
+    if(cpos != std::string::npos)
+    {
+      if(cpos == 0)
+      {
+        // Line is a comment
+        continue;
+      }
+      // Comment is at the end of line
+      else if(buffer[cpos - 1] != '\\')
       {
       }
     }
+
+    // We need to decide what this line of code is.
+    // If it begins with a '/', it is a function definition
+
+    if(buffer.front() == '/') // It is a function?
+    {
+      // Read until we reach the closing parenthesis
+      size_t pos = std::string::npos;
+
+      // Loop until we have a closing parenthesis
+      while(pos == std::string::npos)
+      {
+        std::string nbuf;
+        // Get the next line and add it to buffer
+        GETLINE(code, nbuf);
+        lib::pad(nbuf);
+        buffer.append(nbuf);
+
+        // Check if a closing parenthesis is given
+        pos = nbuf.find(')');
+      }
+
+      // Get the function name, with the forward slash
+      pos = buffer.find('(');
+      std::string fname = buffer.substr(1, pos - 2);
+      lib::pad(buffer);
+
+      // Check if the function name is valid, otherwise, syntax error!
+      if(!CheckFunctionName(fname))
+      {
+        fprintf(stderr, "Syntax Error: %s:L%ld:L%ld: Illegal characters in function name.\n", program_file, curpos, nextpos);
+        return ERR_PARSE_FAILED;
+      }
+
+      // Get the parameter list
+      std::vector<std::string, std::string> params;
+      if(buffer.back() != ')')
+      {
+        fprintf(stderr, "Syntax Error: %s:L%ld:%ld: Illegal characters at the end of line; no statements may exist in the same line as the arguments!\n", program_file, curpos, nextpos);
+      }
+      // Parameter list: buffer[pos + 1 -> end - 1]
+      std::string list = buffer.substr(pos + 1, buffer.length() - 2);
+    }
+    else if(buffer.front() == '@') // Import, Define or some other language structure
+    {
+    }
+    else // Anything else, most likely a statement or some other language structure
+    {
+    }
+
+    // This is now unnecessary!
+#undef GETLINE
+    curpos = nextpos;
   }
 
   return SUCCESS;
@@ -118,6 +191,7 @@ int CircuitLangCTX::ParseProgram()
 // Checks for typical syntax errors; currently doesn't do anything
 int CircuitLangCTX::CheckCommonSyntaxErrors()
 {
+  return SUCCESS;
 }
 
 // Check if a letter is a valid first letter in a function name
