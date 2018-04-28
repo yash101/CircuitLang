@@ -127,7 +127,7 @@ namespace runtime
     unsigned long program_counter;
 
     // This function parses a program and populates instruction_vector and jmp_resolver
-    int CheckCommonSyntaxErrors();
+    int PreprocessProgram();
     int ParseProgram();
 
   public:

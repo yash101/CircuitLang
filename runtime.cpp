@@ -81,6 +81,14 @@ int CircuitLangCTX::Run()
   return SUCCESS;
 }
 
+// This function is a preprocessor for all the code; removes comments and replaces imports
+// Imports work like C. The code is literally pasted in.
+int CircuitLangCTX::PreprocessProgram()
+{
+  std::string unprocessed_code = program_code;
+  // Strings can only be 1 line
+}
+
 /*
 This function parses the program code; it determines syntax errors and converts
   the code into the executable format
@@ -115,25 +123,8 @@ int CircuitLangCTX::ParseProgram()
     GETLINE(code, buffer);
     lib::pad(buffer);
 
-    // Remove comments
-    size_t cpos = buffer.find("#");
-    // Comment found
-    if(cpos != std::string::npos)
-    {
-      if(cpos == 0)
-      {
-        // Line is a comment
-        continue;
-      }
-      // Comment is at the end of line
-      else if(buffer[cpos - 1] != '\\')
-      {
-      }
-    }
-
     // We need to decide what this line of code is.
     // If it begins with a '/', it is a function definition
-
     if(buffer.front() == '/') // It is a function?
     {
       // Read until we reach the closing parenthesis
@@ -185,12 +176,6 @@ int CircuitLangCTX::ParseProgram()
     curpos = nextpos;
   }
 
-  return SUCCESS;
-}
-
-// Checks for typical syntax errors; currently doesn't do anything
-int CircuitLangCTX::CheckCommonSyntaxErrors()
-{
   return SUCCESS;
 }
 
